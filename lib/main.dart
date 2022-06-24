@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_start_new/view/home_page.dart';
+import 'package:get/get.dart';
+import 'package:sizer/sizer.dart';
+
 
 void main() {
   runApp(Home());
@@ -9,9 +12,13 @@ void main() {
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Sample1(),
+    return Sizer(
+      builder: (context,or, de) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: HomePage(),
+        );
+      }
     );
   }
 }
@@ -24,37 +31,48 @@ class Sample1 extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final topHeight = MediaQuery.of(context).padding.top;
-    final topBottom = MediaQuery.of(context).padding.bottom;
     final h = height - topHeight;
 
     return Scaffold(
         body: SafeArea(
-          child: Container(
-            height: h.ceil().toDouble(),
-            child: Column(
-              children: [
-                Container(
-                  height: height * 0.20,
-                  width: width,
-                  color: Colors.black,
+          child: Column(
+            children: [
+              Container(
+                height: h * 0.25,
+                width: width,
+                color: Colors.black,
+                child: LayoutBuilder(
+                    builder: (context, cons){
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                            width: cons.maxWidth * 0.5,
+                            height: cons.maxHeight * 0.5,
+                            color: Colors.cyan,
+                          )
+                        ],
+                      );
+                    }
                 ),
-                Container(
-                  height: height * 0.25,
-                  width: width,
-                  color: Colors.purple,
-                ),
-                Container(
-                  height: height * 0.25,
-                  width: width,
-                  color: Colors.grey,
-                ),
-                Container(
-                  height: height * 0.25,
-                  width: width,
-                  color: Colors.green,
-                ),
-              ],
-            ),
+              ),
+              Container(
+                height: h * 0.25,
+                width: width,
+                color: Colors.purple,
+              ),
+              Container(
+                height: h * 0.25,
+                width: width,
+                color: Colors.grey,
+                child: Center(child: Text('Responsive builder', style: TextStyle(color: Colors.white, fontSize: 20.sp),)),
+              ),
+             Container(
+                height: h * 0.25,
+                width: width,
+                color: Colors.green,
+              ),
+            ],
           ),
         )
         // Container(

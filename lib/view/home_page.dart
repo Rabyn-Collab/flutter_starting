@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start_new/models/book.dart';
+import 'package:flutter_start_new/view/detail_page.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
 
@@ -45,41 +47,48 @@ class HomePage extends StatelessWidget {
                      itemCount: books.length,
                      itemBuilder: (context, index){
                      final book = books[index];
-                        return Container(
-                          margin: EdgeInsets.only(right: 10, left:index == 0 ? 10 : 0),
-                          width: 360,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(book.imageUrl)),
-                              Expanded(
-                                child: Container(
-                                  height: 200,
-                                  child: Card(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(book.label),
-                                          Text(book.overview, maxLines: 5),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(book.rating),
-                                              Text(book.genre)
-                                            ],
-                                          )
-                                        ],
+                        return InkWell(
+                          onTap: (){
+                     Get.to(() => DetailPage(book), transition: Transition.leftToRight);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 10, left:index == 0 ? 10 : 0),
+                            width: 360,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                    child: Hero(
+                                        tag: book.imageUrl,
+                                        child: Image.network(book.imageUrl))),
+                                Expanded(
+                                  child: Container(
+                                    height: 200,
+                                    child: Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(book.label),
+                                            Text(book.overview, maxLines: 5),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(book.rating),
+                                                Text(book.genre)
+                                              ],
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              )
-                            ],
+                                )
+                              ],
+                            ),
                           ),
                         );
                      }
@@ -108,7 +117,13 @@ class HomePage extends StatelessWidget {
                          children: [
                            ClipRRect(
                              borderRadius: BorderRadius.circular(10),
-                             child: CachedNetworkImage(imageUrl: book.imageUrl,
+                             child: CachedNetworkImage(
+                               placeholder: (context, str){
+                                 return Center(child: CircularProgressIndicator(
+                                   color: Colors.purple,
+                                 ));
+                               },
+                               imageUrl: book.imageUrl,
                                height: 150,
                                fit: BoxFit.fitHeight,),
                            ),
