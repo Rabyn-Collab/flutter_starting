@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +7,13 @@ class Person{
   int age;
   String name;
   Person({required this.name, required this.age});
+
+  Person copyWith({String? name, int? age}){
+    return Person(
+        name: name ?? this.name,
+        age: age ?? this.age
+    );
+  }
 
 }
 

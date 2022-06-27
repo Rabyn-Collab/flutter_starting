@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/provider/counter_provider.dart';
+import 'package:flutter_start_new/view/todo_page.dart';
 import 'package:get/get.dart';
 
 
@@ -21,7 +22,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-        home: Counter(),
+        home:TodoPage(),
     );
   }
 }
@@ -51,7 +52,9 @@ class Counter extends StatelessWidget {
                       children: [
                         TextButton(
                             onPressed: () {
-                              ref.read(countState.notifier).state.age = 100;
+                              ref.read(countState.notifier).update((state) => state.copyWith(
+                                age: 100
+                              ));
                             }, child: Text('increment')
                         ),
                         TextButton(
