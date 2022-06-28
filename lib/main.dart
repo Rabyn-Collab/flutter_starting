@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/provider/counter_provider.dart';
@@ -6,9 +7,28 @@ import 'package:get/get.dart';
 
 
 
+Future getSomething()async{
+  final dio = Dio();
+ try{
+   final response = await  dio.get('https://jsonplaceholder.typicode.com/photos');
+  print(response.data);
+ }on DioError catch(err){
+   print(err.message);
+ }
+}
 
 
-void main () {
+
+void main () async{
+  getSomething();
+  // try{
+  //   final data = await getSomething();
+  //   print('call me');
+  //   print(data);
+  // }catch(err){
+  //   print(err);
+  // }
+  //getSomething().then((value) => print(value)).catchError((err) => print(err));
   runApp(ProviderScope(child: Home()));
 }
 

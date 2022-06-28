@@ -23,6 +23,11 @@ class TodoPage extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     controller: nameController,
+                    enabled: true,
+                    onChanged: (val){
+                      print(val);
+                     ref.read(todoProvider.notifier).getDataFilter(nameController.text);
+                    },
                     onFieldSubmitted: (val){
                       final newPerson = Person(age: Random().nextInt(90)  , name: val, id: DateTime.now().toString());
                       ref.read(todoProvider.notifier).add(newPerson);
