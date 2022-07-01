@@ -2,33 +2,16 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/provider/counter_provider.dart';
+import 'package:flutter_start_new/view/sample_page.dart';
 import 'package:flutter_start_new/view/todo_page.dart';
 import 'package:get/get.dart';
 
 
 
-Future getSomething()async{
-  final dio = Dio();
- try{
-   final response = await  dio.get('https://jsonplaceholder.typicode.com/photos');
-  print(response.data);
- }on DioError catch(err){
-   print(err.message);
- }
-}
 
 
 
 void main () async{
-  getSomething();
-  // try{
-  //   final data = await getSomething();
-  //   print('call me');
-  //   print(data);
-  // }catch(err){
-  //   print(err);
-  // }
-  //getSomething().then((value) => print(value)).catchError((err) => print(err));
   runApp(ProviderScope(child: Home()));
 }
 
@@ -42,7 +25,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-        home:TodoPage(),
+        home:SamplePage(),
     );
   }
 }
