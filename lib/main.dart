@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/provider/counter_provider.dart';
+import 'package:flutter_start_new/view/home_page.dart';
 import 'package:flutter_start_new/view/sample_page.dart';
 import 'package:flutter_start_new/view/todo_page.dart';
 import 'package:get/get.dart';
@@ -25,10 +26,52 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-        home:SamplePage(),
+        home:HomePage(),
     );
   }
 }
+
+
+
+
+
+class User{
+  final String name;
+  final int age;
+
+  User({required this.name, required this.age});
+
+  User.initState(): age=90, name='hari';
+  User copyWith({int? age, String? name}){
+    return User(
+        name: name ?? this.name,
+        age: age ?? this.age
+    );
+  }
+
+
+}
+
+
+
+class Sample1 extends StatelessWidget {
+  User user= User.initState();
+
+  @override
+  Widget build(BuildContext context) {
+    user = user.copyWith(age: 100);
+    print('${user.name} ${user.age}');
+    return Scaffold(
+        body: Container()
+    );
+  }
+}
+
+
+
+
+
+
 
 
 
