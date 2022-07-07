@@ -39,6 +39,7 @@ dependencies:
   get: ^4.6.5
   flutter_riverpod: ^1.0.4
   dio: ^4.0.6
+  keyboard_dismisser: ^3.0.0
 
 dev_dependencies:
   flutter_test:

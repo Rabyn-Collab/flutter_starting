@@ -1,8 +1,6 @@
 
 
 
-import 'dart:convert';
-
 class Movie{
 
     final int id;
