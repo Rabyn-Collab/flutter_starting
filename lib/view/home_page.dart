@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/api.dart';
 import 'package:flutter_start_new/provider/movie_provider.dart';
+import 'package:flutter_start_new/view/detail_page.dart';
+import 'package:get/get.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 
@@ -91,6 +93,19 @@ class HomePage extends StatelessWidget {
                         ),
                       ) : movieState.errorMessage.isNotEmpty ?Container(
                         child: Center(child: Text(movieState.errorMessage),),
+                      ) : movieState.movies[0].title == 'no-data' ? Container(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('try using another keyword', style: TextStyle(fontSize: 17),),
+                              ElevatedButton(
+                                  onPressed: (){
+                                    ref.refresh(movieProvider.notifier);
+                                  }, child: Text('Refresh'))
+                            ],
+                          ),
+                        ),
                       ) : Container(
                         height: h * 0.9,
                         child: GridView.builder(
@@ -102,13 +117,18 @@ class HomePage extends StatelessWidget {
                               childAspectRatio: 2/3
                             ),
                             itemBuilder: (context, index){
-                              return ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: CachedNetworkImage(
-                                    errorWidget: (c, s,d){
-                                      return Image.asset('assets/images/no_image.jpg');
-                                    },
-                                     imageUrl: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/${movieState.movies[index].poster_path}'));
+                              return InkWell(
+                                onTap: (){
+                                  Get.to(() => DetailPage(movieState.movies[index]), transition: Transition.leftToRight);
+                                },
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: CachedNetworkImage(
+                                      errorWidget: (c, s,d){
+                                        return Image.asset('assets/images/no_image.jpg');
+                                      },
+                                       imageUrl: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/${movieState.movies[index].poster_path}')),
+                              );
                             }
                         ),
                       ),

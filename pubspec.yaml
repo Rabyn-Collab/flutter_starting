@@ -40,6 +40,7 @@ dependencies:
   flutter_riverpod: ^1.0.4
   dio: ^4.0.6
   keyboard_dismisser: ^3.0.0
+  youtube_player_flutter: ^8.1.0
 
 dev_dependencies:
   flutter_test:

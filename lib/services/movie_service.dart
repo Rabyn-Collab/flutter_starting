@@ -35,8 +35,15 @@ class MovieService{
         'page': page
       });
       final data = response.data['results'];
-      final  movieData = (data as List).map((e) => Movie.fromJson(e)).toList();
-      return movieData;
+      if((data as List).isEmpty){
+         return [Movie(
+             title: 'no-data',
+             id: 0, overview: '', poster_path: '', vote_average: '', release_date: '')];
+      }else{
+        final  movieData = data.map((e) => Movie.fromJson(e)).toList();
+        return movieData;
+      }
+
     }on DioError catch (err){
       throw DioException.fromDioError(err).errorMessage;
     }

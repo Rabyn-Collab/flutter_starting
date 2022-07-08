@@ -12,5 +12,4 @@ class Api{
   static const upcoming = '$baseUrl/upcoming';
   static const searchMovie = 'https://api.themoviedb.org/3/search/movie';
 
-
 }
