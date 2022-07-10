@@ -3,6 +3,7 @@
 
 
 import 'package:dio/dio.dart';
+import 'package:flutter_start_new/api.dart';
 import 'package:flutter_start_new/api_exceptions.dart';
 import 'package:flutter_start_new/models/movie.dart';
 
@@ -48,6 +49,26 @@ class MovieService{
       throw DioException.fromDioError(err).errorMessage;
     }
   }
+
+
+
+ // static Future<String> getVideoById(int id) async{
+ //    final dio = Dio();
+ //    try{
+ //      final response = await dio.get('${Api.baseUrl}/$id/videos',
+ //          queryParameters: {
+ //            'api_key': '2a0f926961d00c667e191a21c14461f8'
+ //          }
+ //      );
+ //      return response.data['results'][0]['key'];
+ //
+ //    }on DioError catch (err){
+ //      throw DioException.fromDioError(err).errorMessage;
+ //    }
+ //
+ //
+ //  }
+
 
 
 

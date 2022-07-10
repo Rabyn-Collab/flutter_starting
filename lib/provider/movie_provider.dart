@@ -78,8 +78,8 @@ class MovieProvider extends StateNotifier<MovieState>{
 
 final videoProvider  = FutureProvider.family((ref, int id) => VideoProvider().getVideoById(id));
 
-class VideoProvider {
 
+class VideoProvider {
   Future<String> getVideoById(int id) async{
     final dio = Dio();
     final response = await dio.get('${Api.baseUrl}/$id/videos',
@@ -90,3 +90,24 @@ class VideoProvider {
     return response.data['results'][0]['key'];
   }
 }
+
+//
+// final videoProvider  = StateNotifierProvider.family<VideoProvider, AsyncValue<String>,int>((ref, int id) => VideoProvider(AsyncData(''), id));
+//
+//
+// class VideoProvider extends StateNotifier<AsyncValue<String>>{
+//   VideoProvider(super.state, this.id){
+//     getVideoById();
+//   }
+// final int id;
+//
+//   Future<void> getVideoById() async {
+//     try {
+//       state = AsyncLoading();
+//     final response = await MovieService.getVideoById(id);
+//     state = AsyncData(response);
+//     } catch (err) {
+//        state = AsyncError(err);
+//     }
+//   }
+// }
