@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/provider/counter_provider.dart';
 import 'package:flutter_start_new/view/home_page.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/adapters.dart';
 
 
 
@@ -12,6 +13,9 @@ import 'package:get/get.dart';
 
 void main () async{
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  final b = await Hive.openBox('cached');
   SystemChrome.setPreferredOrientations(
       [
        DeviceOrientation.portraitUp,

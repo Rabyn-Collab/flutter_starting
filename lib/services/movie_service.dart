@@ -2,10 +2,13 @@
 
 
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_start_new/api.dart';
 import 'package:flutter_start_new/api_exceptions.dart';
 import 'package:flutter_start_new/models/movie.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class MovieService{
 
@@ -13,6 +16,15 @@ class MovieService{
   static Future<List<Movie>> getMovieByCategory({required String apiPath, required int page})async {
     final dio = Dio();
            try{
+             if(apiPath == Api.popular){
+               final response1 = await dio.get(apiPath, queryParameters: {
+                 'api_key': '2a0f926961d00c667e191a21c14461f8', 'language': 'en-Us',
+                 'page': 1
+               });
+               final data = jsonEncode(response1.data);
+               final box = Hive.box('cached');
+               box.put('popular', data);
+             }
              final response = await dio.get(apiPath, queryParameters: {
                'api_key': '2a0f926961d00c667e191a21c14461f8', 'language': 'en-Us',
                'page': page
@@ -21,8 +33,22 @@ class MovieService{
             final  movieData = (data as List).map((e) => Movie.fromJson(e)).toList();
              return movieData;
            }on DioError catch (err){
-             throw DioException.fromDioError(err).errorMessage;
+             if(apiPath == Api.popular){
+               if(err.message.contains('SocketException')){
+                 final box = Hive.box('cached');
+                 String movieData = box.get('popular');
+                 final data = jsonDecode(movieData);
+                 final  movie = (data['results'] as List).map((e) => Movie.fromJson(e)).toList();
+                 return movie;
+               }else{
+                 throw DioException.fromDioError(err).errorMessage;
+               }
+             }else{
+               throw DioException.fromDioError(err).errorMessage;
+             }
+
            }
+
   }
 
 
@@ -46,8 +72,8 @@ class MovieService{
       }
 
     }on DioError catch (err){
-      throw DioException.fromDioError(err).errorMessage;
-    }
+throw DioException.fromDioError(err).errorMessage;
+}
   }
 
 
