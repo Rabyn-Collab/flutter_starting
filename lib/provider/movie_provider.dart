@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/api.dart';
 import 'package:flutter_start_new/models/movie_state.dart';
 import 'package:flutter_start_new/services/movie_service.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../models/movie.dart';
 
 
 
@@ -16,31 +21,40 @@ class MovieProvider extends StateNotifier<MovieState>{
 
   Future<void> getMovie() async{
     try{
-      state = state.copyWith(isLoad: true);
-
+     // state = state.copyWith(isLoad: true);
+   List<Movie> _movies = [];
       if(state.searchText.isEmpty){
-        final response = await MovieService.getMovieByCategory(apiPath: state.apiPath, page: state.page);
+        _movies = await MovieService.getMovieByCategory(apiPath: state.apiPath, page: state.page);
         state = state.copyWith(isLoad: false);
-        state = state.copyWith(
-            movies: response
-        );
       }else{
-        final response = await MovieService.searchMovie(apiPath: state.apiPath, page: state.page,
+        _movies = await MovieService.searchMovie(apiPath: state.apiPath, page: state.page,
         searchText: state.searchText
         );
         state = state.copyWith(isLoad: false);
-        state = state.copyWith(
-            movies: response
-        );
-
       }
 
+      state = state.copyWith(
+          movies: [...state.movies, ..._movies],
+          errorMessage: ''
+      );
 
     }catch(err){
       state = state.copyWith(isLoad: false);
-      state = state.copyWith(
-        errorMessage: err as String
-      );
+      if(state.apiPath == Api.popular){
+            final box = Hive.box('cached');
+            String movieData = box.get('popular');
+            final data = jsonDecode(movieData);
+            final  movie = (data['results'] as List).map((e) => Movie.fromJson(e)).toList();
+            state = state.copyWith(
+                errorMessage: '',
+              movies: movie
+            );
+      }else{
+        state = state.copyWith(
+            errorMessage: err as String
+        );
+      }
+
 
     }
 
@@ -70,6 +84,15 @@ class MovieProvider extends StateNotifier<MovieState>{
   }
 
 
+
+  void loadMore(){
+    state = state.copyWith(
+        page:  state.page + 1,
+        searchText: ''
+    );
+    getMovie();
+
+  }
 
 
 

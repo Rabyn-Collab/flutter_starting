@@ -33,20 +33,7 @@ class MovieService{
             final  movieData = (data as List).map((e) => Movie.fromJson(e)).toList();
              return movieData;
            }on DioError catch (err){
-             if(apiPath == Api.popular){
-               if(err.message.contains('SocketException')){
-                 final box = Hive.box('cached');
-                 String movieData = box.get('popular');
-                 final data = jsonDecode(movieData);
-                 final  movie = (data['results'] as List).map((e) => Movie.fromJson(e)).toList();
-                 return movie;
-               }else{
-                 throw DioException.fromDioError(err).errorMessage;
-               }
-             }else{
                throw DioException.fromDioError(err).errorMessage;
-             }
-
            }
 
   }
