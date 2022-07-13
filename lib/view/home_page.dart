@@ -17,10 +17,8 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class HomePage extends StatelessWidget {
 
-
   final searchController = TextEditingController();
-
-  @override
+@override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
@@ -31,10 +29,11 @@ class HomePage extends StatelessWidget {
             GestureType.onPanUpdateDownDirection,
           ],
           child: OfflineBuilder(
-            child: Container(),
+            debounceDuration: Duration(seconds: 1),
+        child: Container(),
         connectivityBuilder: ( context,ConnectivityResult connectivity, Widget child,) {
           final bool connected = connectivity != ConnectivityResult.none;
-
+       //   print(connected);
           return SafeArea(
             child: Consumer(
                 builder: (context, ref, child) {
@@ -70,7 +69,7 @@ class HomePage extends StatelessWidget {
                             PopupMenuButton(
                                 onSelected: (val) {
                                   ref.read(movieProvider.notifier)
-                                      .updateMovieByCategory(val as String);
+                                      .updateMovieByCategory(val as String,connected);
                                 },
                                 child: Icon(Icons.menu, size: 40,),
                                 itemBuilder: (context) =>
@@ -104,11 +103,12 @@ class HomePage extends StatelessWidget {
                           ],
                         ),
                       ),
-       box.isNotEmpty ?    movieState.apiPath == Api.popular ?  movieState.isLoad ? LoadingUi(h) : movieState.errorMessage.isNotEmpty ? Container(
-             child: Center(child: Text(movieState.errorMessage),),
-           ) : movieState.movies[0].title == 'no-data' ? ErrorUi(ref) : MovieWidget(movieState, h, ref) :    connected  ?  movieState.isLoad ? LoadingUi(h) : movieState.errorMessage.isNotEmpty ? Container(
-                  child: Center(child: Text(movieState.errorMessage),),
-                ) : movieState.movies[0].title == 'no-data' ? ErrorUi(ref) : MovieWidget(movieState, h, ref) : ConnectionUi() : ConnectionUi()
+
+
+             connected ?       movieState.movies.isEmpty ? Center(child: CircularProgressIndicator()):
+                 movieState.errorMessage.isNotEmpty ?  Center(child: Text(movieState.errorMessage),) :
+                   MovieWidget(movieState, h, ref) : movieState.apiPath == Api.popular? MovieWidget(movieState, h, ref) :  ConnectionUi()
+
                     ],
                   );
                 }

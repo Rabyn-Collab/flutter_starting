@@ -11,51 +11,49 @@ import '../models/movie.dart';
 
 
 
+final connectionState = StateProvider<bool>((ref) => false);
+
 final movieProvider = StateNotifierProvider<MovieProvider, MovieState>((ref) => MovieProvider(MovieState.initSate()));
 
 class MovieProvider extends StateNotifier<MovieState>{
   MovieProvider(super.state){
-      getMovie();
+    getMovie();
   }
 
-
   Future<void> getMovie() async{
-    try{
-     // state = state.copyWith(isLoad: true);
-   List<Movie> _movies = [];
-      if(state.searchText.isEmpty){
-        _movies = await MovieService.getMovieByCategory(apiPath: state.apiPath, page: state.page);
-        state = state.copyWith(isLoad: false);
-      }else{
-        _movies = await MovieService.searchMovie(apiPath: state.apiPath, page: state.page,
-        searchText: state.searchText
-        );
-        state = state.copyWith(isLoad: false);
-      }
-
-      state = state.copyWith(
-          movies: [...state.movies, ..._movies],
-          errorMessage: ''
-      );
-
-    }catch(err){
-      state = state.copyWith(isLoad: false);
-      if(state.apiPath == Api.popular){
-            final box = Hive.box('cached');
-            String movieData = box.get('popular');
-            final data = jsonDecode(movieData);
-            final  movie = (data['results'] as List).map((e) => Movie.fromJson(e)).toList();
-            state = state.copyWith(
-                errorMessage: '',
-              movies: movie
-            );
-      }else{
+    print(state.apiPath);
+    final box = Hive.box('cached');
+    if(state.apiPath == Api.popular){
+      print('hello some');
+        final data = box.get('popular');
+       final movieModel = (jsonDecode(data)['results'] as List).map((e) => Movie.fromJson(e) ).toList();
         state = state.copyWith(
-            errorMessage: err as String
+            movies: [...state.movies, ...movieModel],
+            errorMessage: ''
+        );
+
+    }else {
+      try {
+        List<Movie> _movies = [];
+        if (state.searchText.isEmpty) {
+          _movies = await MovieService.getMovieByCategory(
+              apiPath: state.apiPath, page: state.page);
+        } else {
+          _movies = await MovieService.searchMovie(
+              apiPath: state.apiPath, page: state.page,
+              searchText: state.searchText
+          );
+        }
+        state = state.copyWith(
+            movies: [...state.movies, ..._movies],
+            errorMessage: ''
+        );
+      } catch (err) {
+        print(err);
+        state = state.copyWith(
+          errorMessage: err as String,
         );
       }
-
-
     }
 
   }
@@ -64,6 +62,7 @@ class MovieProvider extends StateNotifier<MovieState>{
   void searchMovie(String searchText){
     state = state.copyWith(
         movies: [],
+        page: 1,
         searchText: searchText,
         apiPath: Api.searchMovie
     );
@@ -72,14 +71,33 @@ class MovieProvider extends StateNotifier<MovieState>{
   }
 
 
-  void updateMovieByCategory(String apiPath){
-    state = state.copyWith(
-      movies: [],
-      apiPath: apiPath,
-      searchText: ''
-    );
+  void updateMovieByCategory(String apiPath, bool connected){
 
-    getMovie();
+      if(connected){
+        state = state.copyWith(
+            movies: [],
+            page: 1,
+            apiPath: apiPath,
+            searchText: ''
+        );
+         getMovie();
+      }else if(apiPath == Api.popular && connected == false){
+          state = state.copyWith(
+              movies: [],
+              page: 1,
+              apiPath: apiPath,
+              searchText: ''
+          );
+          getMovie();
+        }else if(apiPath != Api.popular && connected == false){
+        state = state.copyWith(
+            movies: [],
+            page: 1,
+            apiPath: apiPath,
+            searchText: ''
+        );
+      }
+
 
   }
 
@@ -88,12 +106,11 @@ class MovieProvider extends StateNotifier<MovieState>{
   void loadMore(){
     state = state.copyWith(
         page:  state.page + 1,
-        searchText: ''
+        // searchText: ''
     );
     getMovie();
 
   }
-
 
 
 }
