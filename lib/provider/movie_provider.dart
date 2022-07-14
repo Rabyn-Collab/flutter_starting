@@ -18,9 +18,9 @@ final movieProvider = StateNotifierProvider.family<MovieProvider, MovieState, Ne
 
 class MovieProvider extends StateNotifier<MovieState>{
   MovieProvider(super.state, this.networkStatus){
-    if(networkStatus == NetworkStatus.On){
+
       getMovie();
-    }
+
 
   }
 
@@ -52,7 +52,6 @@ class MovieProvider extends StateNotifier<MovieState>{
             errorMessage: ''
         );
       } catch (err) {
-        print(err);
         state = state.copyWith(
           errorMessage: err as String,
         );
@@ -83,7 +82,8 @@ class MovieProvider extends StateNotifier<MovieState>{
             searchText: ''
         );
          getMovie();
-      }else if(apiPath == Api.popular){
+      }else if(apiPath == Api.popular && connectionStatus == NetworkStatus.Off){
+        print('h');
           state = state.copyWith(
               movies: [],
               page: 1,
@@ -92,8 +92,9 @@ class MovieProvider extends StateNotifier<MovieState>{
           );
           getMovie();
         }else if(apiPath != Api.popular){
+          print('hello');
+          print(state.movies);
         state = state.copyWith(
-          movies: [],
             page: 1,
             apiPath: apiPath,
             searchText: ''

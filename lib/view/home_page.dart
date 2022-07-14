@@ -18,6 +18,7 @@ class HomePage extends ConsumerWidget {
 @override
   Widget build(BuildContext context, ref) {
   final network = ref.watch(networkAwareProvider);
+  print(network);
     final h = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -31,8 +32,8 @@ class HomePage extends ConsumerWidget {
                 builder: (context, ref, child) {
                   final box = Hive.box('cached');
                   final movieState = ref.watch(movieProvider(network));
-                  print(movieState.apiPath);
-                  print(movieState.cachedMovie);
+                  // print(movieState.apiPath);
+                  // print(movieState.cachedMovie);
                   return Column(
                     children: [
                       Container(
@@ -97,7 +98,6 @@ class HomePage extends ConsumerWidget {
                           ],
                         ),
                       ),
-
 
              network == NetworkStatus.On ?   movieState.movies.isEmpty ? Center(child: CircularProgressIndicator()):
                  movieState.errorMessage.isNotEmpty ?  Center(child: Text(movieState.errorMessage),) :

@@ -12,8 +12,8 @@ class NetworkDetectorNotifier extends StateNotifier<NetworkStatus> {
 
  late NetworkStatus lastResult;
 
-  NetworkDetectorNotifier() : super(NetworkStatus.NotDetermined) {
-    lastResult = NetworkStatus.NotDetermined;
+  NetworkDetectorNotifier() : super(NetworkStatus.Off) {
+    lastResult = NetworkStatus.Off;
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Use Connectivity() here to gather more info if you need t
      late NetworkStatus newState;
