@@ -1,39 +1,46 @@
 import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-ConnectivityStatus? checkStatus;
 
-enum ConnectivityStatus{
-  Wifi,
-  Cellular,
-  Offline
-}
+enum NetworkStatus { NotDetermined, On, Off }
 
-class ConnectivityService{
+class NetworkDetectorNotifier extends StateNotifier<NetworkStatus> {
+  StreamController<ConnectivityResult> controller =
+  StreamController<ConnectivityResult>();
 
-  StreamController<ConnectivityStatus> _status = StreamController<ConnectivityStatus>();
+ late NetworkStatus lastResult;
 
-  ConnectivityService(){
-
+  NetworkDetectorNotifier() : super(NetworkStatus.NotDetermined) {
+    lastResult = NetworkStatus.NotDetermined;
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      _status.add(_getResult(result));
+      // Use Connectivity() here to gather more info if you need t
+     late NetworkStatus newState;
+      switch (result) {
+        case ConnectivityResult.mobile:
+        case ConnectivityResult.wifi:
+          newState = NetworkStatus.On;
+          break;
+        case ConnectivityResult.none:
+          newState = NetworkStatus.Off;
+          // TODO: Handle this case.
+          break;
+        case ConnectivityResult.bluetooth:
+          // TODO: Handle this case.
+          break;
+        case ConnectivityResult.ethernet:
+          // TODO: Handle this case.
+          break;
+      }
+
+      if (newState != state) {
+        state = newState;
+      }
     });
-
   }
 }
 
-ConnectivityStatus _getResult(ConnectivityResult result){
-  switch(result){
-    case ConnectivityResult.wifi:
-      return ConnectivityStatus.Wifi;
-    case ConnectivityResult.mobile:
-      return ConnectivityStatus.Cellular;
-    case ConnectivityResult.none:
-      return ConnectivityStatus.Offline;
-    default:
-      return ConnectivityStatus.Offline;
-
-  }
-}
-
-final statusProvider = StreamProvider<ConnectivityStatus>((ref) => ConnectivityService()._status.stream);
+final networkAwareProvider = StateNotifierProvider<NetworkDetectorNotifier, NetworkStatus>((ref) {
+  return NetworkDetectorNotifier();
+});

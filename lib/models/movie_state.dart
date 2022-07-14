@@ -15,7 +15,7 @@ class MovieState{
   final String searchText;
   final List<Movie> movies;
   final int page;
-  final bool isLoad;
+  final List<Movie> cachedMovie;
   final String errorMessage;
 
 
@@ -23,25 +23,26 @@ class MovieState{
     required this.apiPath,
     required this.movies,
     required this.searchText,
+    required this.cachedMovie,
     required this.page,
     required this.errorMessage,
-    required this.isLoad
 });
 
 
-  MovieState.initSate() : searchText='',  movies=[], apiPath=Api.popular, page=1, isLoad=false, errorMessage='';
+  MovieState.initSate() : searchText='',  movies=[], apiPath=Api.popular, page=1,  errorMessage='', cachedMovie =[];
 
 
   MovieState copyWith({ String? apiPath, String? searchText, List<Movie>? movies, int? page,
     bool? isLoad,
-    String? errorMessage
+    String? errorMessage,
+    List<Movie>? cachedMovie
   }){
     return MovieState(
       movies: movies ?? this.movies,
       apiPath: apiPath ?? this.apiPath,
+      cachedMovie: cachedMovie ?? this.cachedMovie,
       page: page ?? this.page,
       searchText: searchText ?? this.searchText,
-      isLoad: isLoad ?? this.isLoad,
       errorMessage: errorMessage ?? this.errorMessage
     );
   }

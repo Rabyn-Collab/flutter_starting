@@ -1,25 +1,23 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/api.dart';
 import 'package:flutter_start_new/common_widgets/connection_ui.dart';
-import 'package:flutter_start_new/common_widgets/error_ui.dart';
-import 'package:flutter_start_new/common_widgets/loading_ui.dart';
+import 'package:flutter_start_new/connectivity_check.dart';
+import 'package:flutter_start_new/models/movie_state.dart';
 import 'package:flutter_start_new/provider/movie_provider.dart';
-import 'package:flutter_start_new/view/detail_page.dart';
 import 'package:flutter_start_new/widgets/movie_widgets.dart';
-import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
 
   final searchController = TextEditingController();
 @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+  final network = ref.watch(networkAwareProvider);
     final h = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -28,17 +26,13 @@ class HomePage extends StatelessWidget {
             GestureType.onTap,
             GestureType.onPanUpdateDownDirection,
           ],
-          child: OfflineBuilder(
-            debounceDuration: Duration(seconds: 1),
-        child: Container(),
-        connectivityBuilder: ( context,ConnectivityResult connectivity, Widget child,) {
-          final bool connected = connectivity != ConnectivityResult.none;
-       //   print(connected);
-          return SafeArea(
+          child: SafeArea(
             child: Consumer(
                 builder: (context, ref, child) {
                   final box = Hive.box('cached');
-                  final movieState = ref.watch(movieProvider);
+                  final movieState = ref.watch(movieProvider(network));
+                  print(movieState.apiPath);
+                  print(movieState.cachedMovie);
                   return Column(
                     children: [
                       Container(
@@ -54,7 +48,7 @@ class HomePage extends StatelessWidget {
                                   child: TextFormField(
                                     controller: searchController,
                                     onFieldSubmitted: (val) {
-                                      ref.read(movieProvider.notifier)
+                                      ref.read(movieProvider(network).notifier)
                                           .searchMovie(val);
                                       searchController.clear();
                                     },
@@ -68,8 +62,8 @@ class HomePage extends StatelessWidget {
                                 )),
                             PopupMenuButton(
                                 onSelected: (val) {
-                                  ref.read(movieProvider.notifier)
-                                      .updateMovieByCategory(val as String,connected);
+                                  ref.read(movieProvider(network).notifier)
+                                      .updateMovieByCategory(val as String, network);
                                 },
                                 child: Icon(Icons.menu, size: 40,),
                                 itemBuilder: (context) =>
@@ -105,18 +99,16 @@ class HomePage extends StatelessWidget {
                       ),
 
 
-             connected ?       movieState.movies.isEmpty ? Center(child: CircularProgressIndicator()):
+             network == NetworkStatus.On ?   movieState.movies.isEmpty ? Center(child: CircularProgressIndicator()):
                  movieState.errorMessage.isNotEmpty ?  Center(child: Text(movieState.errorMessage),) :
-                   MovieWidget(movieState, h, ref) : movieState.apiPath == Api.popular? MovieWidget(movieState, h, ref) :  ConnectionUi()
+                   MovieWidget(movieState, h, ref, network, movieState.apiPath) :  movieState.apiPath == Api.popular? movieState.errorMessage.isNotEmpty ? Center(child: Text(movieState.errorMessage)): MovieWidget(movieState, h, ref, network, movieState.apiPath) :  ConnectionUi()
 
                     ],
                   );
                 }
-            ),
-          );
-        }
-          ),
+            ),)
         )
+
     );
   }
 }
