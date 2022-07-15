@@ -18,7 +18,8 @@ class HomePage extends ConsumerWidget {
 @override
   Widget build(BuildContext context, ref) {
   final network = ref.watch(networkAwareProvider);
-  print(network);
+print(network);
+
     final h = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -31,9 +32,7 @@ class HomePage extends ConsumerWidget {
             child: Consumer(
                 builder: (context, ref, child) {
                   final box = Hive.box('cached');
-                  final movieState = ref.watch(movieProvider(network));
-                  // print(movieState.apiPath);
-                  // print(movieState.cachedMovie);
+                  final movieState = ref.watch(movieProvider);
                   return Column(
                     children: [
                       Container(
@@ -49,9 +48,12 @@ class HomePage extends ConsumerWidget {
                                   child: TextFormField(
                                     controller: searchController,
                                     onFieldSubmitted: (val) {
-                                      ref.read(movieProvider(network).notifier)
-                                          .searchMovie(val);
-                                      searchController.clear();
+                                      if(network == NetworkStatus.On) {
+                                        ref.read(movieProvider.notifier)
+                                            .searchMovie(val);
+                                        searchController.clear();
+                                      }
+                                        searchController.clear();
                                     },
                                     autofocus: false,
                                     decoration: InputDecoration(
@@ -63,7 +65,7 @@ class HomePage extends ConsumerWidget {
                                 )),
                             PopupMenuButton(
                                 onSelected: (val) {
-                                  ref.read(movieProvider(network).notifier)
+                                  ref.read(movieProvider.notifier)
                                       .updateMovieByCategory(val as String, network);
                                 },
                                 child: Icon(Icons.menu, size: 40,),

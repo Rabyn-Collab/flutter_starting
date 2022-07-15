@@ -5,10 +5,6 @@ import 'package:flutter_start_new/api.dart';
 import 'package:flutter_start_new/connectivity_check.dart';
 import 'package:flutter_start_new/models/movie_state.dart';
 import 'package:flutter_start_new/provider/movie_provider.dart';
-import 'package:flutter_start_new/view/detail_page.dart';
-import 'package:get/get.dart';
-
-
 
 
 class MovieWidget extends StatelessWidget {
@@ -21,7 +17,6 @@ class MovieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(movieState.movies);
     return NotificationListener(
       onNotification: (onNotification) {
         if (onNotification is ScrollEndNotification) {
@@ -29,8 +24,7 @@ class MovieWidget extends StatelessWidget {
           final max = onNotification.metrics.maxScrollExtent;
           if (before == max) {
 
-              ref.read(movieProvider(connected).notifier).loadMore();
-
+              ref.read(movieProvider.notifier).loadMore();
           }
         }
         return true;

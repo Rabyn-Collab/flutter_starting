@@ -11,7 +11,7 @@ import 'package:flutter_start_new/models/movie.dart';
 
 class MovieState{
 
-  final String apiPath;
+  late String apiPath;
   final String searchText;
   final List<Movie> movies;
   final int page;

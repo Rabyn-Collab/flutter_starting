@@ -33,7 +33,6 @@ class MovieService{
             final  movieData = (data as List).map((e) => Movie.fromJson(e)).toList();
              return movieData;
            }on DioError catch (err){
-             print(err);
                throw DioException.fromDioError(err).errorMessage;
            }
 
