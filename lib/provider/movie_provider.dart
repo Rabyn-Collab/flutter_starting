@@ -14,15 +14,16 @@ import '../models/movie.dart';
 
 final connectionState = StateProvider<bool>((ref) => false);
 
-final movieProvider = StateNotifierProvider.autoDispose<MovieProvider, MovieState>((ref) => MovieProvider(MovieState.initSate()));
+final movieProvider = StateNotifierProvider.family<MovieProvider, MovieState, String>((ref, api) =>
+    MovieProvider(MovieState.initSate(), api));
 
 class MovieProvider extends StateNotifier<MovieState>{
 
-  MovieProvider(super.state){
+  MovieProvider(super.state, this.apiPath){
       getMovie();
-
   }
 
+  final String apiPath;
 
 
   Future<void> getMovie() async{
@@ -30,10 +31,10 @@ class MovieProvider extends StateNotifier<MovieState>{
         List<Movie> _movies = [];
         if (state.searchText.isEmpty) {
           _movies = await MovieService.getMovieByCategory(
-              apiPath: state.apiPath, page: state.page);
+              apiPath: apiPath, page: state.page);
         } else {
           _movies = await MovieService.searchMovie(
-              apiPath: state.apiPath, page: state.page,
+              apiPath: apiPath, page: state.page,
               searchText: state.searchText
           );
         }
@@ -42,28 +43,26 @@ class MovieProvider extends StateNotifier<MovieState>{
             errorMessage: ''
         );
       } catch (err) {
-        if(state.apiPath == Api.popular){
+        if(apiPath == Api.popular){
           final box = Hive.box('cached');
           if(box.isNotEmpty) {
             final data = box.get('popular');
             final movieModel = (jsonDecode(data)['results'] as List).map((e) =>
                 Movie.fromJson(e)).toList();
             state = state.copyWith(
-                cachedMovie: movieModel,
                 errorMessage: '',
-              movies:  state.movies
+              movies:  movieModel
             );
           }else{
             state = state.copyWith(
                 errorMessage: 'check your connection'
             );
           }
-        }else{
+        }else {
           state = state.copyWith(
             errorMessage: err as String,
           );
         }
-
       }
 
   }
@@ -81,9 +80,8 @@ class MovieProvider extends StateNotifier<MovieState>{
   }
 
 
-  void updateMovieByCategory(String apiPath, NetworkStatus connectionStatus){
+  void updateMovieByCategory(String apiPath){
     final box = Hive.box('cached');
-      if(connectionStatus == NetworkStatus.On){
         state = state.copyWith(
             movies: [],
             page: 1,
@@ -91,22 +89,6 @@ class MovieProvider extends StateNotifier<MovieState>{
             searchText: ''
         );
          getMovie();
-      }else if(connectionStatus == NetworkStatus.Off  && apiPath == Api.popular && box.isNotEmpty){
-        final data = box.get('popular');
-        final movieModel = (jsonDecode(data)['results'] as List).map((e) =>
-            Movie.fromJson(e)).toList();
-        state = state.copyWith(
-            cachedMovie: movieModel,
-          movies:  state.movies,
-          apiPath: apiPath,
-          page: 1
-        );
-        }else if(apiPath != Api.popular){
-        state = state.copyWith(
-          movies: state.movies,
-            apiPath: apiPath,
-        );
-      }
 
 
   }

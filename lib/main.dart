@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_start_new/provider/counter_provider.dart';
+import 'package:flutter_start_new/provider/todo_new_provider.dart';
 import 'package:flutter_start_new/view/home_page.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/adapters.dart';
+
+import 'models/todo.dart';
 
 
 
@@ -35,10 +38,71 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-        home:HomePage(),
+        //home:HomePage(),
+      home: TodoShow(),
     );
   }
 }
+
+
+
+
+
+
+
+
+class TodoShow extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: SafeArea(
+          child: Consumer(
+            builder: (context, ref, child) {
+              final todoState = ref.watch(newProvider);
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                child: todoState.isLoading ? Center(child: CircularProgressIndicator()): ListView(
+                  children: [
+                    Container(
+                      child: TextFormField(
+                        onFieldSubmitted: (val){
+                          ref.read(newProvider.notifier).addTodo(Todo(title: val));
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'add some todo'
+                        ),
+                      ),
+
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Column(
+                      children: todoState.todos.map((e) {
+                        return ListTile(
+                          title: Text(e.title),
+                        );
+                      }).toList(),
+                    )
+
+                  ],
+                ),
+              );
+            }
+          ),
+        )
+    );
+  }
+}
+
+
+
+
+
+
+
+
 
 
 
