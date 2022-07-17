@@ -78,12 +78,36 @@ class TodoShow extends StatelessWidget {
                     SizedBox(
                       height: 50,
                     ),
-                    Column(
-                      children: todoState.todos.map((e) {
-                        return ListTile(
-                          title: Text(e.title),
-                        );
-                      }).toList(),
+                    Container(
+                      height: 500,
+                      child: ListView.builder(
+                        itemCount: todoState.todos.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final todo = todoState.todos[index];
+                          return  ListTile(
+                            title: Text(todo.title),
+                            trailing: Container(
+                              width: 100,
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: (){
+
+                                      }, icon: Icon(Icons.edit)),
+                                  IconButton(
+                                      onPressed: (){
+
+                                        ref.read(newProvider.notifier).removeTodo(index);
+
+                                      }, icon: Icon(Icons.delete))
+                                ],
+
+                              ),
+                            ),
+                          );
+                        },
+
+                      ),
                     )
 
                   ],
@@ -92,6 +116,12 @@ class TodoShow extends StatelessWidget {
             }
           ),
         )
+    );
+  }
+
+  IconButton _buildIconButton({required Todo todo,required int index,required Icon icon, required VoidCallback on}) {
+    return IconButton(
+        onPressed: on, icon: icon
     );
   }
 }
