@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "844748638723",
+    "project_id": "firesocial-ff55e",
+    "storage_bucket": "firesocial-ff55e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844748638723:android:07b3848a24f128c1f21c36",
+        "android_client_info": {
+          "package_name": "com.example.flutter_start_new"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "844748638723-5jtqplqnkc13ei6u1r1lg702roj7rkg7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzzbuy_PTWfM2S2ibXejFOjMTikso5Pzs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "844748638723-5jtqplqnkc13ei6u1r1lg702roj7rkg7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
